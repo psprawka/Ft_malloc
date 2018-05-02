@@ -26,15 +26,21 @@
 # define BLACK	'b'
 # define RED	'r'
 
-typedef struct	s_rbtree
+#define GRANDPA		root->parent->parent
+#define PARENT		root->parent
+#define UNCLE_LEFT	GRANDPA->left
+#define UNCLE_RIGHT	GRANDPA->right
+
+extern t_tag	*g_tags_tree;
+
+typedef struct	s_tag
 {
 	char			color;
 	short			size;
-	void			*mptr;
 	struct s_rbtree	*parent;
 	struct s_rbtree	*left;
 	struct s_rbtree	*right;
-}				t_rbtree;
+}				t_tag;
 
 
 /*
@@ -49,9 +55,17 @@ void *ft_malloc(size_t size);
 //void *ft_realloc(void *ptr, size_t size);
 
 /*
- ** malloc_rbtrees.c
+** malloc_rbtags.c
+*/
+t_tag	*create_tag(t_tag *root, size_t size);
+t_tag	*insert_tag(t_tag *root, size_t size);
+void	valid_tree(t_tag *root);
+void	insertion(t_tag *root, size_t size);
+
+/*
+ ** malloc_rotations.c
  */
-void	rotation_left(t_rbtree *root, t_rbtree *root_parent);
-void	rotation_right(t_rbtree *root, t_rbtree *root_parent);
+void	rotate_left(t_rbtree *root, t_rbtree *root_parent);
+void	rotate_right(t_rbtree *root, t_rbtree *root_parent);
 
 #endif
