@@ -18,7 +18,8 @@ HEADERS = includes/
 SRCS_DIR = srcs/
 
 SRCS =	$(SRCS_DIR)malloc.c \
-	$(SRCS_DIR)malloc_rbtrees.c
+	$(SRCS_DIR)malloc_rbtags.c \
+	$(SRCS_DIR)malloc_rotations.c
 
 
 OBJS = $(SRCS:.c=.o)

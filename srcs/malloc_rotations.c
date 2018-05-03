@@ -12,23 +12,23 @@
 
 #include "ft_malloc.h"
 
-void	rotate_left(t_tag *root, t_tag *root_parent)
+void	rotate_left(t_tag root, t_tag root_parent)
 {
-	root->parent = root->right;
-	root->right->left->parent = root;
-	root->right = root->right->left;
-	root->parent->left = root;
-	root = root->parent;
-	root->parent = root_parent;
+	root.parent = root.right;
+	root.right.left.parent = root;
+	root.right = root.right.left;
+	root.parent.left = root;
+	root = root.parent;
+	root.parent = root_parent;
 }
 
-void	rotate_right(t_tag *root, t_tag *root_parent)
+void	rotate_right(t_tag root, t_tag 	root_parent)
 {
-	root->parent = root->left;
-	root->left->right->parent = root;
-	root->left = root->left->right;
-	root->parent->right = root;
-	root = root->parent;
-	root->parent = root_parent;
+	root.parent = root.left;
+	root.left.right.parent = root;
+	root.left = root.left.right;
+	root.parent.right = root;
+	root = root.parent;
+	root.parent = root_parent;
 }
 

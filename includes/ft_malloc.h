@@ -23,8 +23,10 @@
 # define IS_SMALL(x)	x => TINY && x < LARGE ? 1 : 0
 # define IS_LARGE(x)	x => LARGE ? 1 : 0
 
-# define BLACK	'b'
-# define RED	'r'
+# define BLACK	1
+# define RED	2
+# define FREE	5
+# define USED	6
 
 #define GRANDPA		root->parent->parent
 #define PARENT		root->parent
@@ -33,13 +35,20 @@
 
 extern t_tag	*g_tags_tree;
 
+typedef struct	s_page_tag
+{
+	short			size;
+}				t_page_tag
+
+
 typedef struct	s_tag
 {
-	char			color;
-	short			size;
-	struct s_rbtree	*parent;
-	struct s_rbtree	*left;
-	struct s_rbtree	*right;
+	char			color_free;
+	int				size;
+	void			*head;
+	struct s_tag	*parent;
+	struct s_tag	*left;
+	struct s_tag 	*right;
 }				t_tag;
 
 
@@ -57,15 +66,15 @@ void *ft_malloc(size_t size);
 /*
 ** malloc_rbtags.c
 */
-t_tag	*create_tag(t_tag *root, size_t size);
-t_tag	*insert_tag(t_tag *root, size_t size);
-void	valid_tree(t_tag *root);
-void	insertion(t_tag *root, size_t size);
+t_tag	create_tag(t_tag root, size_t size);
+t_tag	insert_tag(t_tag root, size_t size);
+void	valid_insertion(t_tag root);
+void	insertion(t_tag root, size_t size);
 
 /*
  ** malloc_rotations.c
  */
-void	rotate_left(t_rbtree *root, t_rbtree *root_parent);
-void	rotate_right(t_rbtree *root, t_rbtree *root_parent);
+void	rotate_left(t_tag root, t_tag root_parent);
+void	rotate_right(t_tag root, t_tag 	root_parent);
 
 #endif
