@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
+#include <string.h>
 
 t_tag	*g_tags_tree = NULL;
 
@@ -32,25 +33,43 @@ void	*find_free_node(size_t size)
 	t_tag	*tptr;
 	
 	tptr = g_tags_tree;
+
 	while (tptr)
 	{
+//		ft_printf("ptr in while: %d l: %p r: %p\n", tptr->size, tptr->left, tptr->right);
 		if (tptr->size == size && tptr->color_free & FREE)
+		{
+//			ft_printf("%sFOUND FREE NODE %p %d%s\n", MAGNETA, tptr, size, NORMAL);
 			return ((void *)tptr);
+		}
 		else if (tptr->size > size)
 		{
-			if (tptr->left && tptr->left->size > size || (tptr->color_free & USED))
+			if (tptr->left && (tptr->left->size > size || tptr->color_free & USED))
+			{
+//				ft_printf("moving to left\n");
 				tptr = tptr->left;
+			}
 			else
+			{
+//				ft_printf("%sFOUND FREE NODE %p %d%s\n", ORANGE, tptr, size, NORMAL);
 				return ((void *)tptr);
+			}
 		}
 		else
 		{
 			if (tptr->right)
+			{
+//				ft_printf("moving to right\n");
 				tptr = tptr->right;
+			}
 			else
+			{
+				ft_printf("not big enough\n");
 				return (NULL);
+			}
 		}
 	}
+//	ft_printf("return void\n");
 	return ((void *)tptr);
 }
 
@@ -73,41 +92,67 @@ void	*map_memory(size_t size)
 	int		mapped;
 
 	if ((mptr = find_free_node(size)) != NULL)
-		reuse_tag(mptr, size, *mapped);
+		reuse_tag(mptr, size, &mapped);
 	else
 	{
-		if (IS_TINY(size) && (mapped = 100 * TINY) > -1)
-			mptr = mmap(NULL, 100 * TINY, MAP_ANONYMOUS,
-				PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, -1, 0);
-		else if (IS_SMALL(size) && (mapped = 100 * SMALL))
-			mptr = mmap(NULL, 100 * SMALL, MAP_ANONYMOUS,
-				PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, -1, 0);
-		else if (mapped = size)
-			mptr = mmap(NULL, size, MAP_ANONYMOUS,
-				PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, -1, 0);
- 		mptr += sizeof(t_page_tag));
-		mapped -= (sizeof(t_page_tag));
+//		ft_printf("new page\n");
+		if (IS_TINY(size))
+		{
+//			ft_printf("TINY %d\n", TINY);
+			mapped = 100 * TINY;
+			mptr = mmap(NULL, 100 * TINY, PROT_READ | PROT_WRITE | PROT_EXEC,
+						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+		}
+		else if (IS_SMALL(size))
+		{
+//			ft_printf("SMALL\n");
+			mapped = 100 * SMALL;
+			mptr = mmap(NULL, 100 * SMALL, PROT_READ | PROT_WRITE | PROT_EXEC,
+						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+		}
+		else
+		{
+//			ft_printf("LARGE\n");
+			mapped = size;
+			mptr = mmap(NULL, size, PROT_READ | PROT_WRITE | PROT_EXEC,
+						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+		}
+//		ft_printf("%sThe beginning of a page %p %d\n%s", CYAN, mptr, size, NORMAL);
+ 		mptr += sizeof(t_page_tag);
+//		ft_printf("%sAfter page tag: %p %d\n%s", CYAN, mptr, size, NORMAL);
+		mapped -= sizeof(t_page_tag);
 		insert_tag(mptr, mptr - sizeof(t_page_tag), size, false);
 	}
+//	ft_printf("%sFound: %p %d\n%s", CYAN, mptr, size, NORMAL);
 	free_tag = (t_tag *)mptr;
 	if (mapped - free_tag->size)
+	{
 		insert_tag(mptr + sizeof(t_tag) + free_tag->size, free_tag->head,
 		mapped - free_tag->size - sizeof(t_tag), true);
+	}
+//	ft_printf("%sFound: %p %d\n%s", CYAN, mptr, size, NORMAL);
 	return (mptr);
 }
 
 void	*ft_malloc(size_t size)
 {
 	void *mptr;
-	
+//	ft_printf("%d %s!! NEW MALLOC %d!!\n%s", sizeof(t_tag), GREEN, size, NORMAL);
 	mptr = map_memory(size);
 	mptr += sizeof(t_tag);
+//	ft_printf("%sRETURNING THIS PTR: %p %d\n%s", YELLOW, mptr, size, NORMAL);
 	return (mptr);
 }
 
 int		main(void)
 {
 	char *ptr;
-	ptr = ft_malloc(10);
+	char *ptr2;
+
+	ptr = ft_malloc(9);
+	ptr2 = ft_malloc(960);
+	ptr = strcpy(ptr, "hello");
+	ptr2 = strcpy(ptr2, "adam sucks");
+	ft_printf("[%s][%s]\n", ptr, ptr2);
 	return (0);
 }

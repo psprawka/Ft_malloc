@@ -18,9 +18,10 @@ HEADERS = includes/
 SRCS_DIR = srcs/
 
 SRCS =	$(SRCS_DIR)malloc.c \
-	$(SRCS_DIR)malloc_rbtags.c \
-	$(SRCS_DIR)malloc_rotations.c
-
+	$(SRCS_DIR)malloc_tags.c \
+	$(SRCS_DIR)malloc_rotations.c \
+	$(SRCS_DIR)malloc_tools.c \
+	$(SRCS_DIR)tree_insertion.c
 
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a

@@ -23,7 +23,9 @@ void	insert_tag(void *mptr, void *head, size_t size, bool if_free)
 {
 	t_tag *new;
 	
+	
 	new = (t_tag *)mptr;
+//	ft_printf("%sINSERTING A NODE: %p %d\n%s", CYAN, new, size, NORMAL);
 	new->parent = NULL;
 	new->left = NULL;
 	new->right = NULL;
@@ -31,7 +33,9 @@ void	insert_tag(void *mptr, void *head, size_t size, bool if_free)
 	new->color_free = RED;
 	new->color_free |= (if_free == true ? FREE : USED);
 	new->size = size;
+//	ft_printf("inserting to a tree\n");
 	insertion(new);
+//	ft_printf("insertion finished\n");
 }
 
 /*	Reuse_tag:
@@ -46,7 +50,7 @@ void	reuse_tag(void *mptr, int size, int *remainder)
 	t_tag	*reuse;
 	int		free;
 	
-	
+//	ft_printf("%sREUSING A NODE: %p %d\n%s", CYAN, mptr, size, NORMAL);
 	reuse = (t_tag *)mptr;
 	reuse->color_free = RED;
 	reuse->color_free |= USED;

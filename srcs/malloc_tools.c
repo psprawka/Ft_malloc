@@ -13,9 +13,9 @@
 #include "ft_malloc.h"
 
 /*	Find_position:
- **	this func traverses through a tree, finds and returns a parent node for new
- **	son. Variable 'size' is son's size. If tree is empty returns null.
- */
+**	this func traverses through a tree, finds and returns a parent node for new
+**	son. Variable 'size' is son's size. If tree is empty returns null.
+*/
 
 t_tag	*find_position(size_t size)
 {

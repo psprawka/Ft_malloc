@@ -73,17 +73,17 @@ void	valid_insertion(t_tag *root)
 		}
 		GRANDPA->color_free |= RED;
 		GRANDPA->color_free &= (RED | FREE | USED);
-		valid_innsertion(GRANDPA);
+		valid_insertion(GRANDPA);
 	}
-	else if (GRANDPA && (PARENT->color & RED))
+	else if (GRANDPA && (PARENT->color_free & RED))
 		insertion_case4(root);
 }
 
 /*	Insertion:
- **	Inseriton is responsible for adding a node to a tree, then validate it based
- **	on red black tree's rules. If tree is empty, assing a node. Otherwise find
- **	postion to be assigned, thus parent node and add son. Validate insertion.
- */
+**	Inseriton is responsible for adding a node to a tree, then validate it based
+**	on red black tree's rules. If tree is empty, assing a node. Otherwise find
+**	postion to be assigned, thus parent node and add son. Validate insertion.
+*/
 
 void	insertion(t_tag *to_insert)
 {
@@ -92,10 +92,11 @@ void	insertion(t_tag *to_insert)
 	
 	tptr = g_tags_tree;
 	if (tptr == NULL)
-		tptr = to_insert;
+		g_tags_tree = to_insert;
 	else
 	{
-		parent = find_position(size);
+//		ft_printf("%slooing for a parent%s\n", PINK, NORMAL);
+		parent = find_position(to_insert->size);
 		if (parent->size > to_insert->size)
 			parent->left = to_insert;
 		else

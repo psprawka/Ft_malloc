@@ -15,13 +15,15 @@
 
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdbool.h>
+#include "libft.h"
+#include <sys/mman.h>
 
 # define TINY	128
 # define SMALL	1024
 
 # define IS_TINY(x)		x > 0 && x < TINY ? 1 : 0
-# define IS_SMALL(x)	x => TINY && x < LARGE ? 1 : 0
-# define IS_LARGE(x)	x => LARGE ? 1 : 0
+# define IS_SMALL(x)	x >= TINY && x < SMALL ? 1 : 0
 
 # define BLACK	1
 # define RED	2
@@ -33,12 +35,12 @@
 #define UNCLE_LEFT	GRANDPA->left
 #define UNCLE_RIGHT	GRANDPA->right
 
-extern t_tag	*g_tags_tree;
+
 
 typedef struct	s_page_tag
 {
 	short			size;
-}				t_page_tag
+}				t_page_tag;
 
 
 typedef struct	s_tag
@@ -48,8 +50,11 @@ typedef struct	s_tag
 	void			*head;
 	struct s_tag	*parent;
 	struct s_tag	*left;
-	struct s_tag 	*right;
+	struct s_tag	*right;
 }				t_tag;
+
+
+extern t_tag	*g_tags_tree;
 
 
 /*
@@ -60,16 +65,15 @@ void ft_free(void *ptr);
 /*
 ** malloc.c
 */
-void *ft_malloc(size_t size);
-//void *ft_realloc(void *ptr, size_t size);
+void	*find_free_node(size_t size);
+void	*map_memory(size_t size);
+void	*ft_malloc(size_t size);
 
 /*
-** malloc_rbtags.c
+** malloc_tags.c
 */
-t_tag	create_tag(t_tag root, size_t size);
-t_tag	insert_tag(t_tag root, size_t size);
-void	valid_insertion(t_tag root);
-void	insertion(t_tag root, size_t size);
+void	insert_tag(void *mptr, void *head, size_t size, bool if_free);
+void	reuse_tag(void *mptr, int size, int *remainder);
 
 /*
 ** malloc_rotations.c
@@ -78,7 +82,14 @@ void	rotate_left(t_tag *tag);
 void	rotate_right(t_tag *tag);
 
 /*
+** malloc_tools.c
+*/
+t_tag	*find_position(size_t size);
+
+/*
 ** tree_insertion.c
 */
+void	valid_insertion(t_tag *root);
+void	insertion(t_tag *to_insert);
 
 #endif
