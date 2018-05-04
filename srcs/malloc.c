@@ -16,10 +16,10 @@ t_tag	*g_tags_tree = NULL;
 
 
 /*
-**	Traverse_tree:
+**	find_free_node:
 **	this tool takes a desired size and finds the most appropiate node that would
 **	fit new malloc. Function goes till the end of a tree, but may break before
-**	hitting the end. When size is the same, it returns a curreny node, if malloc
+**	hitting the end. When size is the same, it returns a current node, if malloc
 **	size is bigger than node size, we're moving on the right outer branch of
 **	the tree until we find a proper node. If node big enoungh doesn't exist,
 **	return null. When size is less than node size, function checks next left
@@ -27,18 +27,18 @@ t_tag	*g_tags_tree = NULL;
 **	left child, otherwise current node is returned.
 */
 
-void	*traverse_tree(size_t size)
+void	*find_free_node(size_t size)
 {
 	t_tag	*tptr;
 	
 	tptr = g_tags_tree;
 	while (tptr)
 	{
-		if (tptr->size == size)
+		if (tptr->size == size && tptr->color_free & FREE)
 			return ((void *)tptr);
 		else if (tptr->size > size)
 		{
-			if (tptr->left && tptr->left->size > size)
+			if (tptr->left && tptr->left->size > size || (tptr->color_free & USED))
 				tptr = tptr->left;
 			else
 				return ((void *)tptr);
@@ -51,7 +51,6 @@ void	*traverse_tree(size_t size)
 				return (NULL);
 		}
 	}
-	
 	return ((void *)tptr);
 }
 
@@ -69,44 +68,42 @@ void	*traverse_tree(size_t size)
 
 void	*map_memory(size_t size)
 {
-	void	*freespace;
+	void	*mptr;
 	t_tag	*free_tag;
 	int		mapped;
 
-	if ((freespace = traverse_tree(size)) != NULL)
-		reuse_tag(freespace, size, *mapped);
+	if ((mptr = find_free_node(size)) != NULL)
+		reuse_tag(mptr, size, *mapped);
 	else
 	{
 		if (IS_TINY(size) && (mapped = 100 * TINY) > -1)
-			freespace = mmap(NULL, 100 * TINY, MAP_ANONYMOUS,
+			mptr = mmap(NULL, 100 * TINY, MAP_ANONYMOUS,
 				PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, -1, 0);
 		else if (IS_SMALL(size) && (mapped = 100 * SMALL))
-			freespace = mmap(NULL, 100 * SMALL, MAP_ANONYMOUS,
+			mptr = mmap(NULL, 100 * SMALL, MAP_ANONYMOUS,
 				PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, -1, 0);
 		else if (mapped = size)
-			freespace = mmap(NULL, size, MAP_ANONYMOUS,
-							 PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, -1, 0);
- 		freespace += sizeof(t_page_tag);
-		insert_tag(freespace, freespace - sizeof(t_page_tag), size, false);
+			mptr = mmap(NULL, size, MAP_ANONYMOUS,
+				PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE, -1, 0);
+ 		mptr += sizeof(t_page_tag));
+		mapped -= (sizeof(t_page_tag));
+		insert_tag(mptr, mptr - sizeof(t_page_tag), size, false);
 	}
-	free_tag = (t_tag *)freespace
-	insert_tag(freespace + sizeof(t_tag) + free_tag->size, free_tag->head,
-			   mapped - free_tag->size, true);
-	return (freespace);
+	free_tag = (t_tag *)mptr;
+	if (mapped - free_tag->size)
+		insert_tag(mptr + sizeof(t_tag) + free_tag->size, free_tag->head,
+		mapped - free_tag->size - sizeof(t_tag), true);
+	return (mptr);
 }
-
 
 void	*ft_malloc(size_t size)
 {
 	void *mptr;
 	
 	mptr = map_memory(size);
-	
-	
-	
-	return (NULL);
+	mptr += sizeof(t_tag);
+	return (mptr);
 }
-
 
 int		main(void)
 {

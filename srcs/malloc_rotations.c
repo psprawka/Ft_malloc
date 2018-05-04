@@ -12,23 +12,38 @@
 
 #include "ft_malloc.h"
 
-void	rotate_left(t_tag root, t_tag root_parent)
+/*
+**	Description of functions rotate_left and rotate_right avaliable here ↓
+**	https://en.wikipedia.org/wiki/Red%E2%80%93black_tree
+*/
+
+void	rotate_left(t_tag *tag)
 {
-	root.parent = root.right;
-	root.right.left.parent = root;
-	root.right = root.right.left;
-	root.parent.left = root;
-	root = root.parent;
-	root.parent = root_parent;
+	t_tag *new_head;
+
+	new_head = tag->right;
+	tag->right = new_head->left;
+	new_head->left = tag;
+	new_head->parent = tag->parent;
+	tag->parent = new_head;
+	if (new_head->parent && new_head->parent->left == tag)
+		new_head->parent->left = new_head;
+	if (new_head->parent && new_head->parent->right == tag)
+		new_head->parent->right = new_head;
 }
 
-void	rotate_right(t_tag root, t_tag 	root_parent)
+void	rotate_right(t_tag *tag)
 {
-	root.parent = root.left;
-	root.left.right.parent = root;
-	root.left = root.left.right;
-	root.parent.right = root;
-	root = root.parent;
-	root.parent = root_parent;
+	t_tag *new_head;
+
+	new_head = tag->left;
+	tag->left = new_head->right;
+	new_head->right = tag;
+	new_head->parent = tag->parent;
+	tag->parent = new_head;
+	if (new_head->parent && new_head->parent->left == tag)
+		new_head->parent->left = new_head;
+	if (new_head->parent && new_head->parent->right == tag)
+		new_head->parent->right = new_head;
 }
 

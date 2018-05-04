@@ -72,9 +72,13 @@ void	valid_insertion(t_tag root);
 void	insertion(t_tag root, size_t size);
 
 /*
- ** malloc_rotations.c
- */
-void	rotate_left(t_tag root, t_tag root_parent);
-void	rotate_right(t_tag root, t_tag 	root_parent);
+** malloc_rotations.c
+*/
+void	rotate_left(t_tag *tag);
+void	rotate_right(t_tag *tag);
+
+/*
+** tree_insertion.c
+*/
 
 #endif
