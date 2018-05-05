@@ -25,6 +25,7 @@
 
 void	insertion_case4(t_tag *root)
 {
+//	ft_printf("case 4\n");
 	if (GRANDPA->right && GRANDPA->right->left == root)
 	{
 		rotate_right(PARENT);
@@ -38,6 +39,9 @@ void	insertion_case4(t_tag *root)
 	root == PARENT->left ? rotate_right(GRANDPA) : rotate_left(GRANDPA);
 	PARENT->color_free |= BLACK;
 	PARENT->color_free &= (BLACK | FREE | USED);
+	if (!PARENT->parent)
+		g_tags_tree = PARENT;
+	
 	if (PARENT->left != root)
 	{
 		PARENT->left->color_free |= RED;
@@ -52,6 +56,10 @@ void	insertion_case4(t_tag *root)
 
 void	valid_insertion(t_tag *root)
 {
+//	if (PARENT && GRANDPA)
+//		ft_printf("GRANDPA COLOR: %s\n", (GRANDPA->color_free & RED ? "RED" : (GRANDPA->color_free & BLACK ? "BLACK" : "NONE")));
+//	if (PARENT)
+//		ft_printf("PAARENT COLOR: %s\n", (PARENT->color_free & RED ? "RED" : (PARENT->color_free & BLACK ? "BLACK" : "NONE")));
 	if (!PARENT)
 	{
 		root->color_free |= BLACK;
@@ -97,11 +105,21 @@ void	insertion(t_tag *to_insert)
 	{
 //		ft_printf("%slooing for a parent%s\n", PINK, NORMAL);
 		parent = find_position(to_insert->size);
+//		ft_printf("parent found %p %d\n", parent, parent->size);
 		if (parent->size > to_insert->size)
+		{
+//			ft_printf("1\n");
 			parent->left = to_insert;
+		}
 		else
+		{
+//			ft_printf("2\n");
 			parent->right = to_insert;
+		}
 		to_insert->parent = parent;
 	}
+//	ft_printf("%svalidate: %d %p\n", BLUE, to_insert->size, to_insert);
+//	find_position(785234321);
 	valid_insertion(to_insert);
+//	ft_printf("%svalidation finished: %s%s\n", ORANGE, (to_insert->color_free & RED ? "RED" : (to_insert->color_free & BLACK ? "BLACK" : "NONE")), NORMAL);
 }

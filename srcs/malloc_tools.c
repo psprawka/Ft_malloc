@@ -20,10 +20,12 @@
 t_tag	*find_position(size_t size)
 {
 	t_tag	*tptr;
+	int		i = 0;
 	
 	tptr = g_tags_tree;
-	while (tptr)
+	while (i++ < 5 && tptr)
 	{
+		ft_printf("%sfor: %d | tptr: %d | left: %p right: %p%s\n", YELLOW, size, tptr->size, tptr->left, tptr->right, NORMAL);
 		if (tptr->size > size)
 		{
 			if (!tptr->left)
@@ -39,3 +41,14 @@ t_tag	*find_position(size_t size)
 	}
 	return (tptr);
 }
+
+void	show_alloc_mem(void)
+{
+	
+	
+	
+	
+	
+	
+	
+};

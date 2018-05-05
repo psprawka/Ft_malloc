@@ -27,8 +27,8 @@
 
 # define BLACK	1
 # define RED	2
-# define FREE	5
-# define USED	6
+# define FREE	4
+# define USED	8
 
 #define GRANDPA		root->parent->parent
 #define PARENT		root->parent
@@ -92,4 +92,9 @@ t_tag	*find_position(size_t size);
 void	valid_insertion(t_tag *root);
 void	insertion(t_tag *to_insert);
 
+/*
+** tree_deletion.c
+*/
+void	delete_two_children(t_tag *to_delete);
+void	deletion(t_tag *to_delete);
 #endif
