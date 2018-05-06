@@ -20,12 +20,11 @@
 t_tag	*find_position(size_t size)
 {
 	t_tag	*tptr;
-	int		i = 0;
 	
 	tptr = g_tags_tree;
-	while (i++ < 5 && tptr)
+	while (tptr)
 	{
-		ft_printf("%sfor: %d | tptr: %d | left: %p right: %p%s\n", YELLOW, size, tptr->size, tptr->left, tptr->right, NORMAL);
+//		ft_printf("%sfor: %d | tptr: %d | left: %p right: %p%s\n", YELLOW, size, tptr->size, tptr->left, tptr->right, NORMAL);
 		if (tptr->size > size)
 		{
 			if (!tptr->left)
@@ -42,11 +41,59 @@ t_tag	*find_position(size_t size)
 	return (tptr);
 }
 
+t_info	*update_display_info(void *head, long pages, bool ifreturn)
+{
+	static t_info	info;
+	
+	if (ifreturn == true)
+		return (&info);
+//	printf("%sCOMIN WITH %ld %p\nBEFORE: %p || %ld%s\n", BLUE, pages, head, info.head, info.pages_nb, NORMAL);
+	info.pages_nb += pages;
+	if (info.head == NULL)
+		info.head = head;
+//	printf("%sAFTER: %p || %ld%s\n", BLUE, info.head, info.pages_nb, NORMAL);
+	return (NULL);
+	
+}
+
+size_t		count_size(size_t size)
+{
+	size_t	pages;
+	
+	pages = size / 4096;
+	if (size % 4096 != 0)
+		pages += 1;
+//	printf("%sPAGES CREATED: [%ld]%s\n", PURPLE, (long)pages, NORMAL);
+	update_display_info(NULL, (long)pages, 0);
+	pages *= getpagesize();
+	return (pages);
+}
+
 void	show_alloc_mem(void)
 {
-	
-	
-	
+	t_info			*info;
+	t_segment_tag	*page_tag;
+	void			*ptr;
+	int				i;
+	int				pages_left;
+
+	i = 0;
+	info = update_display_info(NULL, 0, 1);
+	ptr = info->head;
+	printf("LOOOOOOOOL HERE %ld\n", info->pages_nb);
+	while (&(ptr[i]) != (info->head + (info->pages_nb * getpagesize())))
+	{
+		if (i % getpagesize() == 0 && pages_left == 0)
+		{
+			page_tag = (t_segment_tag *)(&(ptr[i]));
+			i += sizeof(t_segment_tag);
+			pages_left = page_tag->pages;
+		}
+//		printf("")
+		pages_left--;
+			
+		
+	}
 	
 	
 	

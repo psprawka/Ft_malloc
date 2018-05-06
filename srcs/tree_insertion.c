@@ -103,7 +103,7 @@ void	insertion(t_tag *to_insert)
 		g_tags_tree = to_insert;
 	else
 	{
-//		ft_printf("%slooing for a parent%s\n", PINK, NORMAL);
+		ft_printf("%slooing for a parent%s\n", PINK, NORMAL);
 		parent = find_position(to_insert->size);
 //		ft_printf("parent found %p %d\n", parent, parent->size);
 		if (parent->size > to_insert->size)

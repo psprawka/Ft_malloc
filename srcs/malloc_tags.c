@@ -22,27 +22,34 @@
 void	insert_tag(void *mptr, void *head, size_t size, bool if_free)
 {
 	t_tag *new;
-	
-	
+
 	new = (t_tag *)mptr;
 	if (if_free == true)
-		ft_printf("%sINSERTING A FREE NODE: %p %d\n%s", CYAN, new, size, NORMAL);
+		printf("%sINSERTING A FREE NODE: %p %zu\n%s", CYAN, new, size, NORMAL);
+	ft_printf("here0 %p\n", new);
 	new->parent = NULL;
+	ft_printf("here1\n");
 	new->left = NULL;
+	ft_printf("here2\n");
 	new->right = NULL;
+	ft_printf("here3\n");
 	new->head = head;
+	ft_printf("here4\n");
 	new->color_free = RED;
+	ft_printf("here5\n");
 	new->color_free |= (if_free == true ? FREE : USED);
+	ft_printf("here6\n");
 	new->size = size;
-//	ft_printf("inserting to a tree\n");
+	ft_printf("inserting to a tree\n");
 	if (if_free == true)
 	{
 		ft_printf("inserting to a tree\n");
 		insertion(new);
 		ft_printf("insertion finished\n");
 	}
-//	ft_printf("insertion finished\n");
+	ft_printf("insertion finished\n");
 	find_position(13000);
+	find_position(1);
 }
 
 /*	Reuse_tag:
@@ -52,21 +59,19 @@ void	insert_tag(void *mptr, void *head, size_t size, bool if_free)
 **	to fit next tag. Var remainder says how much free space was initially.
 */
 
-void	reuse_tag(void *mptr, int size, int *remainder)
+void	reuse_tag(void *mptr, size_t size, size_t *remainder)
 {
 	t_tag	*reuse;
-	int		free;
-	
 	
 	reuse = (t_tag *)mptr;
-	ft_printf("%sREUSING A NODE: %p %d\n%s", CYAN, mptr, reuse->size, NORMAL);
+	printf("%sREUSING A NODE: %p %zu\n%s", CYAN, mptr, reuse->size, NORMAL);
 //	reuse->color_free = RED;
 //	reuse->color_free |= USED;
 	*remainder = reuse->size;
 	if (reuse->size < size + sizeof(t_tag) + 1)
 		size += reuse->size - size;
 	//	reuse->size = size;
-	ft_printf("deleting.. %d, new size: %d\n", reuse->size, size);
+	printf("deleting.. %zu, new size: %zu\n", reuse->size, size);
 	deletion(reuse);
 	ft_printf("after deletion\n");
 	insert_tag(mptr, reuse->head, size, false);
