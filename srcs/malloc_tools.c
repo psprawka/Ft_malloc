@@ -66,6 +66,7 @@ size_t		count_size(size_t size)
 //	printf("%sPAGES CREATED: [%ld]%s\n", PURPLE, (long)pages, NORMAL);
 	update_display_info(NULL, (long)pages, 0);
 	pages *= getpagesize();
+//	printf("%sTOTAL: [%ld]%s\n", PURPLE, (long)pages, NORMAL);
 	return (pages);
 }
 
@@ -80,7 +81,7 @@ void	show_alloc_mem(void)
 	i = 0;
 	info = update_display_info(NULL, 0, 1);
 	ptr = info->head;
-	printf("LOOOOOOOOL HERE %ld\n", info->pages_nb);
+//	printf("LOOOOOOOOL HERE %ld\n", info->pages_nb);
 	while (&(ptr[i]) != (info->head + (info->pages_nb * getpagesize())))
 	{
 		if (i % getpagesize() == 0 && pages_left == 0)
@@ -94,8 +95,14 @@ void	show_alloc_mem(void)
 			
 		
 	}
-	
-	
-	
-	
-};
+
+}
+
+void	print_tree(t_tag *ptr)
+{
+	if (!ptr)
+		return ;
+	printf("%s%zu %s	| left: %zu	| right: %zu	| parent: %zu%s\n", MAROON, ptr->size, ptr->color_free & RED ? "R" : "B", ptr->left == NULL ? 0 : ptr->left->size, ptr->right == NULL ? 0 : ptr->right->size, ptr->parent == NULL ? 0 : ptr->parent->size, NORMAL);
+	print_tree(ptr->left);
+	print_tree(ptr->right);
+}

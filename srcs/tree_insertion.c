@@ -60,6 +60,8 @@ void	valid_insertion(t_tag *root)
 //		ft_printf("GRANDPA COLOR: %s\n", (GRANDPA->color_free & RED ? "RED" : (GRANDPA->color_free & BLACK ? "BLACK" : "NONE")));
 //	if (PARENT)
 //		ft_printf("PAARENT COLOR: %s\n", (PARENT->color_free & RED ? "RED" : (PARENT->color_free & BLACK ? "BLACK" : "NONE")));
+	printf("INSERTION %zu, %s\n", root->size, root->color_free & BLACK ? "BL" : "RD");
+//	print_tree(g_tags_tree);
 	if (!PARENT)
 	{
 		root->color_free |= BLACK;
@@ -69,18 +71,22 @@ void	valid_insertion(t_tag *root)
 			UNCLE_LEFT && UNCLE_LEFT->color_free & RED) || (UNCLE_RIGHT &&
 			UNCLE_RIGHT != PARENT && UNCLE_RIGHT->color_free & RED)))
 	{
+		printf("comin inside\n");
 		if (UNCLE_RIGHT)
 		{
+			printf("uncle right black\n");
 			UNCLE_RIGHT->color_free |= BLACK;
 			UNCLE_RIGHT->color_free &= (BLACK | FREE | USED);
 		}
 		if (UNCLE_LEFT)
 		{
+			printf("uncle left black\n");
 			UNCLE_LEFT->color_free |= BLACK;
 			UNCLE_LEFT->color_free &= (BLACK | FREE | USED);
 		}
 		GRANDPA->color_free |= RED;
 		GRANDPA->color_free &= (RED | FREE | USED);
+		printf("GRANDPA COLOR SHOULD BE RED: %s\n",GRANDPA->color_free & BLACK ? "BL" : "RD");
 		valid_insertion(GRANDPA);
 	}
 	else if (GRANDPA && (PARENT->color_free & RED))
@@ -103,9 +109,9 @@ void	insertion(t_tag *to_insert)
 		g_tags_tree = to_insert;
 	else
 	{
-		ft_printf("%slooing for a parent%s\n", PINK, NORMAL);
+		ft_printf("%slooking for a parent%s\n", PINK, NORMAL);
 		parent = find_position(to_insert->size);
-//		ft_printf("parent found %p %d\n", parent, parent->size);
+		ft_printf("parent found %p %d\n", parent, parent->size);
 		if (parent->size > to_insert->size)
 		{
 //			ft_printf("1\n");

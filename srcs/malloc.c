@@ -127,18 +127,31 @@ void	*map_memory(size_t size)
 //		ft_printf("%sThe beginning of a page %p %d\n%s", CYAN, mptr, size, NORMAL);
  		mptr += sizeof(t_segment_tag);
 //		ft_printf("%sAfter page tag: %p %d\n%s", CYAN, mptr, size, NORMAL);
+//		printf("mapped1: %zu\n", mapped);
 		mapped -= sizeof(t_segment_tag);
-		insert_tag(mptr, mptr - sizeof(t_segment_tag), size, false);
+//		printf("mapped12: %zu\n", mapped);
+		if (mapped > (size + sizeof(t_tag) + sizeof(t_tag)))
+		{
+//			printf("FIRST\n");
+			insert_tag(mptr, mptr - sizeof(t_segment_tag), size, false);
+		}
+		else
+		{
+//			printf("SECOND size %lu\n", size + (mapped - size - sizeof(t_tag)));
+			insert_tag(mptr, mptr - sizeof(t_segment_tag), size + (mapped - size - sizeof(t_tag)), false);
+		}
 	}
 //	ft_printf("%sFound: %p %d\n%s", CYAN, mptr, size, NORMAL);
+	
 	free_tag = (t_tag *)mptr;
-	if ((size_t)(mapped - free_tag->size - sizeof(t_tag)) > 0)
+//	printf("current pos: %p\nsizeof t_seg: %lu\nsizeof t_tag: %lu\nused: %lu\nmapped: %zu\nleft size: %zu\ntag->size %zu\n", mptr, sizeof(t_segment_tag), sizeof(t_tag), sizeof(t_tag) + free_tag->size, mapped, mapped - free_tag->size - sizeof(t_tag), free_tag->size);
+	if (mapped > (free_tag->size + sizeof(t_tag) + sizeof(t_tag)))
 	{
-//		printf("here [%zu]\n", mapped - free_tag->size - sizeof(t_tag));
+//		printf("current pos: %p\nsizeof t_seg: %lu\nsizeof t_tag: %lu\nused: %lu\nmapped: %zu\nleft size: %zu\ntag->size %zu\n", mptr, sizeof(t_segment_tag), sizeof(t_tag), sizeof(t_tag) + free_tag->size, mapped, mapped - free_tag->size - sizeof(t_tag), free_tag->size);
 		insert_tag(mptr + sizeof(t_tag) + free_tag->size, free_tag->head,
 		mapped - free_tag->size - sizeof(t_tag), true);
 	}
-//	ft_printf("%sFound: %p %d\n%s", CYAN, mptr, size, NORMAL);
+	ft_printf("%sFound: %p %ld\n%s", CYAN, mptr, free_tag->size, NORMAL);
 	return (mptr);
 }
 
@@ -151,7 +164,7 @@ void	*ft_malloc(size_t size)
 	mptr = map_memory(size);
 	mptr += sizeof(t_tag);
 //	show_alloc_mem();
-//	ft_printf("%sRETURNING THIS PTR: %p %d\n%s", YELLOW, mptr, size, NORMAL);
+//	ft_printf("%sRETURNING THIS PTR: %p\n%s", YELLOW, mptr, NORMAL);
 	return (mptr);
 }
 
@@ -159,16 +172,16 @@ int		main(void)
 {
 	char *ptr;
 	char *ptr1;
-	char *ptr2;
+	char *ptr2 = NULL;
 
-//	ptr = ft_malloc(9);
-//	ptr2 = ft_malloc(960);
-//	ptr1 = ft_malloc(11700);
-//	ptr = ft_malloc(1);
-//	ptr = ft_malloc(40);
-//	ptr = ft_malloc(0);
-//	ptr = ft_malloc(2147483648);
-//	ptr = ft_malloc(10);
+	ptr = ft_malloc(9);
+	ptr2 = ft_malloc(960);
+	ptr1 = ft_malloc(11700);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(40);
+	ptr = ft_malloc(0);
+	ptr = ft_malloc(2147483648);
+	ptr = ft_malloc(10);
 	ptr = ft_malloc(4000);
 	ptr = ft_malloc(2200);
 	ptr = ft_malloc(3333);
@@ -177,6 +190,57 @@ int		main(void)
 	ptr = ft_malloc(22344);
 	ptr = ft_malloc(3693);
 	ptr2 = ft_malloc(3014);
+	ptr2 = ft_malloc(2000);
+	ptr = ft_malloc(500);
+	ptr = ft_malloc(2000);
+	ptr = ft_malloc(330);
+	ptr = ft_malloc(130);
+	ptr = ft_malloc(1112);
+	ptr2 = ft_malloc(339);
+	ptr = ft_malloc(456);
+	ptr = ft_malloc(151);
+	ptr = ft_malloc(120);
+	ptr = ft_malloc(313);
+	ptr = ft_malloc(3693);
+	ptr2 = ft_malloc(3014);
+	
+//	ptr = ft_malloc(9);
+//	ptr2 = ft_malloc(960);
+//	ptr1 = ft_malloc(11700);
+//	ptr = ft_malloc(1);
+//	ptr = ft_malloc(40);
+//	ptr = ft_malloc(0);
+//	ptr = ft_malloc(2147483648);
+//	ptr = ft_malloc(10);
+//	ptr = ft_malloc(4000);
+//	ptr = ft_malloc(2200);
+//	ptr = ft_malloc(3333);
+//	ptr = ft_malloc(123423342);
+//	ptr = ft_malloc(40);
+//	ptr = ft_malloc(2);
+//	ptr = ft_malloc(637);
+//	ptr = ft_malloc(1);
+//	ptr = ft_malloc(42);
+//	ptr = ft_malloc(5);
+//	ptr = ft_malloc(466);
+//	ptr2 = ft_malloc(3567);
+//	ptr = ft_malloc(4753);
+//	ptr = ft_malloc(22234344);
+//	ptr = ft_malloc(3693);
+//	ptr2 = ft_malloc(3204);
+//	ptr2 = ft_malloc(2000);
+//	ptr = ft_malloc(5);
+//	ptr = ft_malloc(2000);
+//	ptr = ft_malloc(334230);
+//	ptr = ft_malloc(130);
+//	ptr = ft_malloc(12);
+//	ptr2 = ft_malloc(339);
+//	ptr = ft_malloc(456);
+//	ptr = ft_malloc(1);
+//	ptr = ft_malloc(120);
+//	ptr = ft_malloc(313);
+//	ptr = ft_malloc(33);
+//	ptr2 = ft_malloc(3014);
 	ptr = strcpy(ptr, "hello");
 	ptr2 = strcpy(ptr2, "adam sucks");
 	ft_printf("[%s][%s]\n", ptr, ptr2);

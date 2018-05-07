@@ -37,7 +37,6 @@
 
 #include <stdio.h>
 
-
 typedef struct	s_info
 {
 	long	pages_nb;
@@ -93,6 +92,7 @@ t_tag	*find_position(size_t size);
 t_info	*update_display_info(void *head, long pages, bool ifreturn);
 size_t	count_size(size_t size);
 void	show_alloc_mem(void);
+void	print_tree(t_tag *ptr);
 
 /*
 ** tree_insertion.c
