@@ -32,8 +32,6 @@ void	rotate_left(t_tag *tag)
 		new_head->parent->left = new_head;
 	if (new_head->parent && new_head->parent->right == tag)
 		new_head->parent->right = new_head;
-//	if (!new_head->parent)
-//		g_tags_tree = new_head;
 }
 
 void	rotate_right(t_tag *tag)
@@ -51,7 +49,5 @@ void	rotate_right(t_tag *tag)
 		new_head->parent->left = new_head;
 	if (new_head->parent && new_head->parent->right == tag)
 		new_head->parent->right = new_head;
-//	if (!new_head->parent)
-//		g_tags_tree = new_head;
 }
 

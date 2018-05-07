@@ -39,14 +39,15 @@
 
 typedef struct	s_info
 {
-	long	pages_nb;
-	void	*head;
+	long			pages_nb;
+	void			*head;
 }				t_info;
 
 typedef struct	s_segment_tag
 {
 	short			to_free;
 	long			pages;
+	void			*nextpage;
 }				t_segment_tag;
 
 typedef struct	s_tag
@@ -90,7 +91,7 @@ void	rotate_right(t_tag *tag);
 */
 t_tag	*find_position(size_t size);
 t_info	*update_display_info(void *head, long pages, bool ifreturn);
-size_t	count_size(size_t size);
+size_t	count_size(size_t size, long *pages_nb);
 void	show_alloc_mem(void);
 void	print_tree(t_tag *ptr);
 

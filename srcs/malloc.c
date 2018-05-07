@@ -33,47 +33,26 @@ void	*find_free_node(size_t size)
 	t_tag	*tptr;
 	
 	tptr = g_tags_tree;
-//	printf("%zu\n", size);
 	while (tptr)
 	{
-//		ft_printf("tptr: %d | left: %p right: %p\n", tptr->size, tptr->left, tptr->right);
+
 		if (tptr->size == size && tptr->color_free & FREE)
-		{
-//			printf(" %zu\n",  tptr->size);
-//			ft_printf("%sFOUND FREE NODE %p %d%s\n", MAGNETA, tptr, size, NORMAL);
 			return ((void *)tptr);
-		}
 		else if (tptr->size > size)
 		{
 			if ((tptr->left && tptr->left->size > size) || tptr->color_free & USED)
-			{
-//				ft_printf("moving to left ");
-//				printf(" %zu -> ",  tptr->size);
-//
 				tptr = tptr->left;
-			}
 			else
-			{
-//				printf("left %zu\n", tptr->size);
-//				ft_printf("%sFOUND FREE NODE %p %d%s\n", ORANGE, tptr, size, NORMAL);
 				return ((void *)tptr);
-			}
 		}
 		else
 		{
 			if (tptr->right)
-			{
-//				printf("moving to right %zu -> ", tptr->size);
 				tptr = tptr->right;
-			}
 			else
-			{
-//				ft_printf("not big enough\n");
 				return (NULL);
-			}
 		}
 	}
-//	ft_printf("return void\n");
 	return ((void *)tptr);
 }
 
@@ -90,81 +69,88 @@ void	*find_free_node(size_t size)
 */
 
 
+void	add_next_page(void *newpage)
+{
+	t_info			*info;
+	void			*pptr;
+	t_segment_tag	*page_tag;
+
+	info = update_display_info(NULL, 0, 1);
+	if (!info->head)
+	{
+		update_display_info(newpage, 0, 0);
+		return ;
+	}
+	page_tag = (t_segment_tag *)info->head;
+	while (page_tag->nextpage)
+	{
+		pptr = page_tag->nextpage;
+		page_tag = (t_segment_tag *)pptr;
+	}
+	page_tag->nextpage = newpage;
+}
+
+
 
 void	*map_memory(size_t size)
 {
-	void	*mptr;
-	t_tag	*free_tag;
-	size_t	mapped;
+	void			*mptr;
+	t_tag			*free_tag;
+	size_t			mapped;
+	long			pages = 0;
+	t_segment_tag	 *page_tag;
 
 	if ((mptr = find_free_node(size)) != NULL)
 		reuse_tag(mptr, size, &mapped);
 	else
 	{
-		ft_printf("new page %d\n", size);
 		if (IS_TINY(size))
 		{
-//			ft_printf("TINY %d\n", TINY);
-			mapped = count_size(100 * TINY);
+			mapped = count_size(100 * TINY, &pages);
 			mptr = mmap(NULL, mapped, PROT_READ | PROT_WRITE | PROT_EXEC,
 						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 		}
 		else if (IS_SMALL(size))
 		{
-//			ft_printf("SMALL\n");
-			mapped = count_size(100 * SMALL);
+			mapped = count_size(100 * SMALL, &pages);
 			mptr = mmap(NULL, mapped, PROT_READ | PROT_WRITE | PROT_EXEC,
 						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 		}
 		else
 		{
-//			ft_printf("LARGE\n");
-			mapped = count_size(size + sizeof(t_segment_tag));
+			mapped = count_size(size + sizeof(t_segment_tag), &pages);
 			mptr = mmap(NULL, mapped, PROT_READ | PROT_WRITE | PROT_EXEC,
 						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 		}
-		update_display_info(mptr, 0, 0);
-//		ft_printf("%sThe beginning of a page %p %d\n%s", CYAN, mptr, size, NORMAL);
+		add_next_page(mptr);
+		page_tag = (t_segment_tag *)mptr;
+		page_tag->pages = pages;
  		mptr += sizeof(t_segment_tag);
-//		ft_printf("%sAfter page tag: %p %d\n%s", CYAN, mptr, size, NORMAL);
-//		printf("mapped1: %zu\n", mapped);
 		mapped -= sizeof(t_segment_tag);
-//		printf("mapped12: %zu\n", mapped);
 		if (mapped > (size + sizeof(t_tag) + sizeof(t_tag)))
-		{
-//			printf("FIRST\n");
 			insert_tag(mptr, mptr - sizeof(t_segment_tag), size, false);
-		}
 		else
-		{
-//			printf("SECOND size %lu\n", size + (mapped - size - sizeof(t_tag)));
 			insert_tag(mptr, mptr - sizeof(t_segment_tag), size + (mapped - size - sizeof(t_tag)), false);
-		}
+		mapped -= sizeof(t_tag);
 	}
-//	ft_printf("%sFound: %p %d\n%s", CYAN, mptr, size, NORMAL);
-	
 	free_tag = (t_tag *)mptr;
-//	printf("current pos: %p\nsizeof t_seg: %lu\nsizeof t_tag: %lu\nused: %lu\nmapped: %zu\nleft size: %zu\ntag->size %zu\n", mptr, sizeof(t_segment_tag), sizeof(t_tag), sizeof(t_tag) + free_tag->size, mapped, mapped - free_tag->size - sizeof(t_tag), free_tag->size);
-	if (mapped > (free_tag->size + sizeof(t_tag) + sizeof(t_tag)))
+	if (mapped > (free_tag->size + sizeof(t_tag)))
 	{
-//		printf("current pos: %p\nsizeof t_seg: %lu\nsizeof t_tag: %lu\nused: %lu\nmapped: %zu\nleft size: %zu\ntag->size %zu\n", mptr, sizeof(t_segment_tag), sizeof(t_tag), sizeof(t_tag) + free_tag->size, mapped, mapped - free_tag->size - sizeof(t_tag), free_tag->size);
 		insert_tag(mptr + sizeof(t_tag) + free_tag->size, free_tag->head,
 		mapped - free_tag->size - sizeof(t_tag), true);
 	}
-	ft_printf("%sFound: %p %ld\n%s", CYAN, mptr, free_tag->size, NORMAL);
 	return (mptr);
 }
 
 void	*ft_malloc(size_t size)
 {
 	void *mptr;
-	printf("%s!! NEW MALLOC %zu!!\n%s", GREEN, size, NORMAL);
+
 	if (size == 0)
 		return (NULL);
 	mptr = map_memory(size);
 	mptr += sizeof(t_tag);
-//	show_alloc_mem();
-//	ft_printf("%sRETURNING THIS PTR: %p\n%s", YELLOW, mptr, NORMAL);
+	show_alloc_mem();
 	return (mptr);
 }
 
@@ -188,17 +174,19 @@ int		main(void)
 	ptr2 = ft_malloc(3567);
 	ptr = ft_malloc(4753);
 	ptr = ft_malloc(22344);
+	
 	ptr = ft_malloc(3693);
 	ptr2 = ft_malloc(3014);
 	ptr2 = ft_malloc(2000);
 	ptr = ft_malloc(500);
-	ptr = ft_malloc(2000);
-	ptr = ft_malloc(330);
+	ptr = ft_malloc(2002);
+//	ptr = ft_malloc(330);
 	ptr = ft_malloc(130);
 	ptr = ft_malloc(1112);
+	
 	ptr2 = ft_malloc(339);
 	ptr = ft_malloc(456);
-	ptr = ft_malloc(151);
+//	ptr = ft_malloc(151);
 	ptr = ft_malloc(120);
 	ptr = ft_malloc(313);
 	ptr = ft_malloc(3693);

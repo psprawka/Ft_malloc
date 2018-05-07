@@ -24,7 +24,6 @@ t_tag	*find_position(size_t size)
 	tptr = g_tags_tree;
 	while (tptr)
 	{
-//		ft_printf("%sfor: %d | tptr: %d | left: %p right: %p%s\n", YELLOW, size, tptr->size, tptr->left, tptr->right, NORMAL);
 		if (tptr->size > size)
 		{
 			if (!tptr->left)
@@ -47,26 +46,23 @@ t_info	*update_display_info(void *head, long pages, bool ifreturn)
 	
 	if (ifreturn == true)
 		return (&info);
-//	printf("%sCOMIN WITH %ld %p\nBEFORE: %p || %ld%s\n", BLUE, pages, head, info.head, info.pages_nb, NORMAL);
 	info.pages_nb += pages;
 	if (info.head == NULL)
 		info.head = head;
-//	printf("%sAFTER: %p || %ld%s\n", BLUE, info.head, info.pages_nb, NORMAL);
 	return (NULL);
 	
 }
 
-size_t		count_size(size_t size)
+size_t		count_size(size_t size, long *pages_nb)
 {
 	size_t	pages;
 	
 	pages = size / 4096;
 	if (size % 4096 != 0)
 		pages += 1;
-//	printf("%sPAGES CREATED: [%ld]%s\n", PURPLE, (long)pages, NORMAL);
 	update_display_info(NULL, (long)pages, 0);
+	*pages_nb = pages;
 	pages *= getpagesize();
-//	printf("%sTOTAL: [%ld]%s\n", PURPLE, (long)pages, NORMAL);
 	return (pages);
 }
 
@@ -74,28 +70,39 @@ void	show_alloc_mem(void)
 {
 	t_info			*info;
 	t_segment_tag	*page_tag;
+	t_tag			*tag;
 	void			*ptr;
-	int				i;
-	int				pages_left;
+	long				i;
+	long			bytes = 0;
+	long	 		total = 0;
 
 	i = 0;
 	info = update_display_info(NULL, 0, 1);
 	ptr = info->head;
-//	printf("LOOOOOOOOL HERE %ld\n", info->pages_nb);
-	while (&(ptr[i]) != (info->head + (info->pages_nb * getpagesize())))
+	while (1)
 	{
-		if (i % getpagesize() == 0 && pages_left == 0)
+		if (i % getpagesize() == 0 && i == bytes)
 		{
-			page_tag = (t_segment_tag *)(&(ptr[i]));
+			if (i != 0)
+				ptr = page_tag->nextpage;
+			i = 0;
+			if (!ptr)
+				return ;
+			page_tag = (t_segment_tag *)ptr;
 			i += sizeof(t_segment_tag);
-			pages_left = page_tag->pages;
+			bytes = page_tag->pages * getpagesize();
 		}
-//		printf("")
-		pages_left--;
-			
-		
+		tag = (t_tag *)(&(ptr[i]));
+		if (tag->color_free & USED)
+		{
+			ft_printf("%p - %p: %ld bytes\n", &(ptr[i]), &(ptr[i]) + sizeof(t_tag) + tag->size, tag->size + sizeof(t_tag));
+			total += tag->size + sizeof(t_tag);
+		}
+		else
+			ft_printf("%s%p - %p: size->tag %ld%s\n", ORANGE, &(ptr[i]), &(ptr[i]) + sizeof(t_tag) + tag->size, tag->size, NORMAL);
+		i += sizeof(t_tag) + tag->size;
 	}
-
+	ft_printf("Total: %ld\n\n", total);
 }
 
 void	print_tree(t_tag *ptr)

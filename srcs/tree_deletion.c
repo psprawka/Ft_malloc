@@ -22,10 +22,8 @@ void	repair_tree(t_tag *right_son)
 
 	if (!right_son || !PARENTT)
 		return ;
-	printf("not return %p %zu %p %p\n", right_son, right_son->size, right_son->left, right_son->right);
 	if (BROTHER->color_free & RED)
 	{
-		printf("case 1\n");
 		parent_color = PARENTT->color_free & RED ? RED : BLACK;
 		son_color = BROTHER->color_free & RED ? RED : BLACK;
 		PARENTT->color_free |= son_color;
@@ -34,10 +32,8 @@ void	repair_tree(t_tag *right_son)
 		BROTHER->color_free &= (parent_color | FREE | USED);
 		rotate_left(PARENTT);
 	}
-	printf("here 2\n");
 	if (BROTHER->color_free & BLACK && (!BROTHER->left || BROTHER->left->color_free & BLACK) && (!BROTHER->right || BROTHER->right->color_free & BLACK))
 	{
-		printf("case 2\n");
 		BROTHER->color_free |= RED;
 		BROTHER->color_free |= (RED | FREE | USED);
 		PARENTT->color_free |= BLACK;
@@ -45,10 +41,8 @@ void	repair_tree(t_tag *right_son)
 			right_son->color_free &= (RED | USED | FREE);
 		repair_tree(PARENTT);
 	}
-	printf("here 3\n");
 	if (BROTHER->color_free & BLACK && (BROTHER->left->color_free & RED) && (BROTHER->right || BROTHER->right->color_free & BLACK))
 	{
-		printf("case 3\n");
 		parent_color = BROTHER->color_free & RED ? RED : BLACK;
 		son_color = BROTHER->left->color_free & RED ? RED : BLACK;
 		BROTHER->color_free |= son_color;
@@ -57,10 +51,8 @@ void	repair_tree(t_tag *right_son)
 		BROTHER->color_free &= (parent_color | FREE | USED);
 		rotate_right(BROTHER);
 	}
-	printf("here 3\n");
 	if (BROTHER->color_free & BLACK && BROTHER->right->color_free & RED)
 	{
-		printf("case 4\n");
 		parent_color = PARENTT->color_free & RED ? RED : BLACK;
 		BROTHER->color_free |= parent_color;
 		BROTHER->color_free &= (parent_color | FREE | USED);
@@ -88,7 +80,7 @@ void	delete_two_children(t_tag *to_delete)
 	
 	if (!to_delete->right->left)
 	{
-		printf("deletion: third case\n");
+		printf("deletion: 3rd case\n");
 		if (!to_delete->parent)
 			g_tags_tree = to_delete->right;
 		else if (to_delete->parent->right == to_delete)
@@ -101,34 +93,20 @@ void	delete_two_children(t_tag *to_delete)
 		to_delete->right->color_free |= color;
 		to_delete->right->color_free &= (color | FREE | USED);
 		to_delete->left->parent = to_delete->right;
-//		printf("before repair\n");
-//		print_tree(g_tags_tree);
-//		printf("before rsfdfdsdfepair\n");
 		if (to_delete->right && to_delete->right->right)
 		{
-//			printf("before sadsadsarsfdgdsdgsdgrefdscxeffsepair\n");
 			to_delete->right->right->color_free |= BLACK;
 			to_delete->right->right->color_free &= (BLACK | FREE | USED);
 		}
-//		else if (to_delete->left->left || to_delete->left->right)
-//		{
-//			printf("feuh\n");
-//			valid_insertion(to_delete->left->left ? to_delete->left->left : to_delete->left->right);
-//		}
 		if (successor_color & BLACK)
-//		{
-//			printf("before sadsadsarsfdgdsdgsdffsepair %p\n", to_delete->right->right);
 			repair_tree(to_delete->right->right);
-//			printf("before sadsadsfgbfgdsdwdbarepair\n");
-//		}
 	}
 	else
 	{
-		printf("deletion: forth case %zu\n", to_delete->size);
+		printf("deletion: 4th case\n");
 		to_replace = to_delete->right->left;
 		while (to_replace->left)
 			to_replace = to_replace->left;
-		printf("replace %zu %p %p\n", to_replace->size, to_replace->left, to_replace->right);
 		to_replace->parent->left = to_replace->right;
 		if (to_replace->right)
 		{
@@ -143,13 +121,10 @@ void	delete_two_children(t_tag *to_delete)
 		successor_color = to_replace->color_free & RED ? RED : BLACK;
 		to_replace->color_free |= color;
 		to_replace->color_free &= (color | USED | FREE);
-		printf("here too\n");
 		if (!to_delete->parent)
 			g_tags_tree = to_replace;
-		printf("here too\n");
 		if (successor_color & BLACK)
 			repair_tree(to_replace->right);
-		printf("here too\n");
 	}
 }
 
@@ -157,7 +132,7 @@ void	delete_one_child(t_tag *to_delete)
 {
 	if (!to_delete->left && to_delete->right)
 	{
-		printf("deletion: second case 1\n");
+		printf("deletion: 2nd case 1\n");
 		if (!to_delete->parent)
 			g_tags_tree = to_delete->right;
 		else if (to_delete->parent->right == to_delete)
@@ -170,7 +145,7 @@ void	delete_one_child(t_tag *to_delete)
 	}
 	else if (to_delete->left && !to_delete->right)
 	{
-		printf("deletion: second case 2\n");
+		printf("deletion: 2nd case 2\n");
 		if (!to_delete->parent)
 			g_tags_tree = to_delete->left;
 		else if (to_delete->parent->right == to_delete)
@@ -187,7 +162,7 @@ void	deletion(t_tag *to_delete)
 {
 	if (!to_delete->left && !to_delete->right)
 	{
-		printf("deletion: first case\n");
+		printf("deletion: 1st case\n");
 		if (!to_delete->parent)
 			g_tags_tree = NULL;
 		else if (to_delete->parent->right == to_delete)
