@@ -90,8 +90,6 @@ void	add_next_page(void *newpage)
 	page_tag->nextpage = newpage;
 }
 
-
-
 void	*map_memory(size_t size)
 {
 	void			*mptr;
@@ -150,7 +148,9 @@ void	*ft_malloc(size_t size)
 		return (NULL);
 	mptr = map_memory(size);
 	mptr += sizeof(t_tag);
+	print_tree(g_tags_tree);
 	show_alloc_mem();
+	
 	return (mptr);
 }
 
@@ -168,67 +168,109 @@ int		main(void)
 	ptr = ft_malloc(0);
 	ptr = ft_malloc(2147483648);
 	ptr = ft_malloc(10);
-	ptr = ft_malloc(4000);
+	ptr = ft_malloc(3451);
 	ptr = ft_malloc(2200);
 	ptr = ft_malloc(3333);
 	ptr2 = ft_malloc(3567);
 	ptr = ft_malloc(4753);
+	ptr = ft_malloc(4294967295);
 	ptr = ft_malloc(22344);
-	
+
 	ptr = ft_malloc(3693);
 	ptr2 = ft_malloc(3014);
 	ptr2 = ft_malloc(2000);
 	ptr = ft_malloc(500);
 	ptr = ft_malloc(2002);
-//	ptr = ft_malloc(330);
+	ptr = ft_malloc(330);
 	ptr = ft_malloc(130);
 	ptr = ft_malloc(1112);
-	
+
 	ptr2 = ft_malloc(339);
 	ptr = ft_malloc(456);
-//	ptr = ft_malloc(151);
+	ptr = ft_malloc(151);
 	ptr = ft_malloc(120);
 	ptr = ft_malloc(313);
 	ptr = ft_malloc(3693);
 	ptr2 = ft_malloc(3014);
-	
-//	ptr = ft_malloc(9);
-//	ptr2 = ft_malloc(960);
-//	ptr1 = ft_malloc(11700);
-//	ptr = ft_malloc(1);
-//	ptr = ft_malloc(40);
-//	ptr = ft_malloc(0);
-//	ptr = ft_malloc(2147483648);
-//	ptr = ft_malloc(10);
-//	ptr = ft_malloc(4000);
-//	ptr = ft_malloc(2200);
-//	ptr = ft_malloc(3333);
-//	ptr = ft_malloc(123423342);
-//	ptr = ft_malloc(40);
-//	ptr = ft_malloc(2);
-//	ptr = ft_malloc(637);
-//	ptr = ft_malloc(1);
-//	ptr = ft_malloc(42);
-//	ptr = ft_malloc(5);
-//	ptr = ft_malloc(466);
-//	ptr2 = ft_malloc(3567);
-//	ptr = ft_malloc(4753);
-//	ptr = ft_malloc(22234344);
-//	ptr = ft_malloc(3693);
-//	ptr2 = ft_malloc(3204);
-//	ptr2 = ft_malloc(2000);
-//	ptr = ft_malloc(5);
-//	ptr = ft_malloc(2000);
-//	ptr = ft_malloc(334230);
-//	ptr = ft_malloc(130);
-//	ptr = ft_malloc(12);
-//	ptr2 = ft_malloc(339);
-//	ptr = ft_malloc(456);
-//	ptr = ft_malloc(1);
-//	ptr = ft_malloc(120);
-//	ptr = ft_malloc(313);
-//	ptr = ft_malloc(33);
-//	ptr2 = ft_malloc(3014);
+
+	ptr = ft_malloc(9);
+	ptr2 = ft_malloc(960);
+	ptr1 = ft_malloc(11700);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(40);
+	ptr = ft_malloc(0);
+	ptr = ft_malloc(2147483648);
+	ptr = ft_malloc(10);
+	ptr = ft_malloc(4000);
+	ptr = ft_malloc(2200);
+	ptr = ft_malloc(3333);
+	ptr = ft_malloc(123423342);
+	ptr = ft_malloc(40);
+	ptr = ft_malloc(2);
+	ptr = ft_malloc(637);
+	ptr = ft_malloc(1987839834543);
+	ptr = ft_malloc(42);
+	ptr = ft_malloc(5);
+	ptr = ft_malloc(466);
+	ptr2 = ft_malloc(4294967295);
+	ptr = ft_malloc(4753);
+	ptr = ft_malloc(22234344);
+	ptr = ft_malloc(3693);
+	ptr2 = ft_malloc(3204);
+	ptr2 = ft_malloc(2000);
+	ptr = ft_malloc(42949672959999);
+	ptr = ft_malloc(2000);
+	ptr = ft_malloc(334230);
+	ptr = ft_malloc(130);
+	ptr = ft_malloc(12);
+	ptr2 = ft_malloc(1223414523432);
+	ptr = ft_malloc(456);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(120);
+	ptr = ft_malloc(3124423);
+	ptr = ft_malloc(33);
+	ptr2 = ft_malloc(3014);
+	ptr = ft_malloc(500);
+	ptr = ft_malloc(20543433402);
+	ptr = ft_malloc(330);
+	ptr = ft_malloc(130);
+	ptr = ft_malloc(500);
+	ptr = ft_malloc(2002);
+	ptr = ft_malloc(330);
+	ptr = ft_malloc(130);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(120);
+	ptr = ft_malloc(3124423);
+	ptr = ft_malloc(33);
+	ptr2 = ft_malloc(3014);
+	ptr = ft_malloc(500);
+	ptr = ft_malloc(20543433402);
+	ptr = ft_malloc(3332430);
+	ptr = ft_malloc(23130);
+	ptr = ft_malloc(500234432);
+	ptr = ft_malloc(2002);
+	ptr = ft_malloc(33423230);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	ptr = ft_malloc(1);
+	print_tree(g_tags_tree);
 	ptr = strcpy(ptr, "hello");
 	ptr2 = strcpy(ptr2, "adam sucks");
 	ft_printf("[%s][%s]\n", ptr, ptr2);

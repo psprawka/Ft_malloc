@@ -87,19 +87,18 @@ void	show_alloc_mem(void)
 				ptr = page_tag->nextpage;
 			i = 0;
 			if (!ptr)
-				return ;
+				break ;
 			page_tag = (t_segment_tag *)ptr;
 			i += sizeof(t_segment_tag);
 			bytes = page_tag->pages * getpagesize();
 		}
 		tag = (t_tag *)(&(ptr[i]));
-		if (tag->color_free & USED)
-		{
-			ft_printf("%p - %p: %ld bytes\n", &(ptr[i]), &(ptr[i]) + sizeof(t_tag) + tag->size, tag->size + sizeof(t_tag));
-			total += tag->size + sizeof(t_tag);
-		}
+		if (tag->color_free & USED && (total += tag->size + sizeof(t_tag)))
+			ft_printf("%p - %p: %ld bytes\n", &(ptr[i]), &(ptr[i]) + tag->size
+					  + sizeof(t_tag), tag->size + sizeof(t_tag));
 		else
-			ft_printf("%s%p - %p: size->tag %ld%s\n", ORANGE, &(ptr[i]), &(ptr[i]) + sizeof(t_tag) + tag->size, tag->size, NORMAL);
+			ft_printf("%s%p - %p: %ld bytes%s\n", GREEN, &(ptr[i]), &(ptr[i]) + tag->size
+					  + sizeof(t_tag), tag->size + sizeof(t_tag), NORMAL);
 		i += sizeof(t_tag) + tag->size;
 	}
 	ft_printf("Total: %ld\n\n", total);

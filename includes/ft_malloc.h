@@ -104,7 +104,9 @@ void	insertion(t_tag *to_insert);
 /*
 ** tree_deletion.c
 */
-void	delete_two_children(t_tag *to_delete);
-void	delete_one_child(t_tag *to_delete);
+void	transplant(t_tag *to_delete, t_tag *to_replace);
+void	repair_tree(t_tag *to_fix);
+t_tag	*delete_two_children(t_tag *to_delete, char *orgcolor);
 void	deletion(t_tag *to_delete);
+
 #endif

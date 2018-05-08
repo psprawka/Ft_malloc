@@ -43,11 +43,7 @@ void	insert_tag(void *mptr, void *head, size_t size, bool if_free)
 	new->color_free |= (if_free == true ? FREE : USED);
 	new->size = size;
 	if (if_free == true)
-	{
-//		ft_printf("inserting to a tree\n");
 		insertion(new);
-//		ft_printf("insertion finished\n");
-	}
 }
 
 /*	Reuse_tag:
@@ -64,13 +60,9 @@ void	reuse_tag(void *mptr, size_t size, size_t *remainder)
 	
 	reuse = (t_tag *)mptr;
 	seg_tag = (t_segment_tag *)reuse->head;
-//	printf("%sREUSING A NODE: %p %zu\n%s", CYAN, mptr, reuse->size, NORMAL);
 	*remainder = reuse->size;
 	if (reuse->size < size + sizeof(t_tag) + 1)
 		size += reuse->size - size;
-	seg_tag->to_free -= 1;
-//	printf("deleting.. %zu, new size: %zu\n", reuse->size, size);
 	deletion(reuse);
-//	ft_printf("after deletion\n");
 	insert_tag(mptr, reuse->head, size, false);
 }

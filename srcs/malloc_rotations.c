@@ -21,7 +21,11 @@ void	rotate_left(t_tag *tag)
 {
 	t_tag *new_head;
 
+	if (!tag)
+		return ;
 	new_head = tag->right;
+	if (!new_head)
+		return ;
 	tag->right = new_head->left;
 	if (new_head->left)
 		new_head->left->parent = tag;
@@ -38,12 +42,19 @@ void	rotate_right(t_tag *tag)
 {
 	t_tag *new_head;
 
+	if (!tag)
+		return ;
 	new_head = tag->left;
+	if (!new_head)
+		return ;
+	printf("1\n");
 	tag->left = new_head->right;
 	if (new_head->right)
 		new_head->right->parent = tag;
+	printf("2\n");
 	new_head->right = tag;
 	new_head->parent = tag->parent;
+	printf("3\n");
 	tag->parent = new_head;
 	if (new_head->parent && new_head->parent->left == tag)
 		new_head->parent->left = new_head;
