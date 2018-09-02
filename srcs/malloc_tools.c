@@ -6,7 +6,7 @@
 /*   By: psprawka <psprawka@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/02 10:45:34 by psprawka          #+#    #+#             */
-/*   Updated: 2018/05/02 10:45:38 by psprawka         ###   ########.fr       */
+/*   Updated: 2018/09/01 23:58:34 by psprawka         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 **	son. Variable 'size' is son's size. If tree is empty returns null.
 */
 
-t_tag	*find_position(size_t size)
+t_rbnode	*find_position(size_t size)
 {
-	t_tag	*tptr;
+	t_rbnode	*tptr;
 	
 	tptr = g_tags_tree;
 	while (tptr)
@@ -40,20 +40,20 @@ t_tag	*find_position(size_t size)
 	return (tptr);
 }
 
-t_info	*update_display_info(void *head, long pages, bool ifreturn)
+t_pages	*update_display_info(void *head, long pages, bool ifreturn)
 {
-	static t_info	info;
+	static t_pages	info;
 	
 	if (ifreturn == true)
 		return (&info);
 	info.pages_nb += pages;
-	if (info.head == NULL)
+	if (!info.head)
 		info.head = head;
 	return (NULL);
 	
 }
 
-size_t		count_size(size_t size, long *pages_nb)
+void	count_size(size_t size, t_malloc *malloc_info)
 {
 	size_t	pages;
 	
@@ -61,16 +61,15 @@ size_t		count_size(size_t size, long *pages_nb)
 	if (size % 4096 != 0)
 		pages += 1;
 	update_display_info(NULL, (long)pages, 0);
-	*pages_nb = pages;
-	pages *= getpagesize();
-	return (pages);
+	malloc_info->pages = pages;
+	malloc_info->mapped_size = pages * getpagesize();
 }
 
 void	show_alloc_mem(void)
 {
-	t_info			*info;
+	t_pages			*info;
 	t_segment_tag	*page_tag;
-	t_tag			*tag;
+	t_rbnode			*tag;
 	void			*ptr;
 	long				i;
 	long			bytes = 0;
@@ -92,19 +91,19 @@ void	show_alloc_mem(void)
 			i += sizeof(t_segment_tag);
 			bytes = page_tag->pages * getpagesize();
 		}
-		tag = (t_tag *)(&(ptr[i]));
-		if (tag->color_free & USED && (total += tag->size + sizeof(t_tag)))
+		tag = (t_rbnode *)(&(ptr[i]));
+		if (tag->color_free & USED && (total += tag->size + sizeof(t_rbnode)))
 			ft_printf("%p - %p: %ld bytes\n", &(ptr[i]), &(ptr[i]) + tag->size
-					  + sizeof(t_tag), tag->size + sizeof(t_tag));
+					  + sizeof(t_rbnode), tag->size + sizeof(t_rbnode));
 		else
 			ft_printf("%s%p - %p: %ld bytes%s\n", GREEN, &(ptr[i]), &(ptr[i]) + tag->size
-					  + sizeof(t_tag), tag->size + sizeof(t_tag), NORMAL);
-		i += sizeof(t_tag) + tag->size;
+					  + sizeof(t_rbnode), tag->size + sizeof(t_rbnode), NORMAL);
+		i += sizeof(t_rbnode) + tag->size;
 	}
 	ft_printf("Total: %ld\n\n", total);
 }
 
-void	print_tree(t_tag *ptr)
+void	print_tree(t_rbnode *ptr)
 {
 	if (!ptr)
 		return ;

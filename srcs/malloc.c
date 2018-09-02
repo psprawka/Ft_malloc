@@ -6,14 +6,14 @@
 /*   By: psprawka <psprawka@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/30 16:21:16 by psprawka          #+#    #+#             */
-/*   Updated: 2018/04/30 16:21:18 by psprawka         ###   ########.fr       */
+/*   Updated: 2018/09/02 00:57:05 by psprawka         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_malloc.h"
 #include <string.h>
 
-t_tag	*g_tags_tree = NULL;
+t_rbnode	*g_tags_tree = NULL;
 
 
 /*
@@ -28,138 +28,160 @@ t_tag	*g_tags_tree = NULL;
 **	left child, otherwise current node is returned.
 */
 
-void	*find_free_node(size_t size)
+// int		find_free_node(t_malloc *malloc_info)
+// {
+// 	t_rbnode	*tptr;
+	
+// 	tptr = g_tags_tree;
+// 	while (tptr)
+// 	{
+// 		if (tptr->size == malloc_info->size && tptr->color_free & FREE)
+// 		{
+// 			malloc_info->mptr = (void *)tptr;
+// 			return (EXIT_SUCCESS);
+// 		}
+// 		else if (tptr->size > malloc_info->size)
+// 		{
+// 			if ((tptr->left && tptr->left->size > malloc_info->size) || tptr->color_free & USED)
+// 				tptr = tptr->left;
+// 			else
+// 			{
+// 				malloc_info->mptr = (void *)tptr;
+// 				return (EXIT_SUCCESS);
+// 			}
+// 		}
+// 		else
+// 		{
+// 			if (!tptr->right)
+// 				return (EXIT_FAILURE);
+// 			tptr = tptr->right;		
+// 		}
+// 	}
+// 	return ((void *)tptr);
+// }
+
+void	*find_free_node(t_malloc *malloc_info)
 {
-	t_tag	*tptr;
+	t_rbnode	*tptr;
 	
 	tptr = g_tags_tree;
 	while (tptr)
 	{
-
-		if (tptr->size == size && tptr->color_free & FREE)
+		if (tptr->size == malloc_info->size && tptr->color_free & FREE)
 			return ((void *)tptr);
-		else if (tptr->size > size)
+		else if (tptr->size > malloc_info->size)
 		{
-			if ((tptr->left && tptr->left->size > size) || tptr->color_free & USED)
+			if ((tptr->left && tptr->left->size > malloc_info->size) || tptr->color_free & USED)
 				tptr = tptr->left;
 			else
 				return ((void *)tptr);
 		}
 		else
 		{
-			if (tptr->right)
-				tptr = tptr->right;
-			else
+			if (!tptr->right)
 				return (NULL);
+			tptr = tptr->right;
 		}
 	}
-	return ((void *)tptr);
+	return (NULL);
+}
+//----------------------------------------------------------------------------------------
+
+void	map_memory(t_malloc *malloc_info)
+{
+	if (IS_TINY(malloc_info->size))
+		count_size(100 * TINY, malloc_info);
+	else if (IS_SMALL(malloc_info->size))
+		count_size(100 * SMALL, malloc_info);
+	else
+		count_size(malloc_info->size + sizeof(t_segment_tag), malloc_info);
+
+	malloc_info->mptr = mmap(NULL, malloc_info->mapped_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
 }
 
 /*
-**	Map_memory:
+**	distribute_memory:
 **	this function maps memory; first, it traverses through the tree and tries to
 **	find a free space where our new size malloc would fit. If it's positive,
 **	reuse_tag will be called, will change tag->size on freespace addres to size
-**	and set mapped to total previous avaliable free space. If node wasn't found,
+**	and set mapped_size to total previous avaliable free space. If node wasn't found,
 **	function uses mmap to create a new map based on the size, then section's tag
 **	is inserted with size 'size' and flag USED on freespace. Then I insert new
 **	free tag on size + header with full avaliable size without desired 'size
 **	with flag FREE. Function returns a pointer pointing at section's tag.
 */
 
-
-void	add_next_page(void *newpage)
+void	distribute_memory(t_malloc *malloc_info)
 {
-	t_info			*info;
-	void			*pptr;
+	t_rbnode		*free_tag;
 	t_segment_tag	*page_tag;
 
-	info = update_display_info(NULL, 0, 1);
-	if (!info->head)
+	if ((malloc_info->mptr = find_free_node(malloc_info)))
 	{
-		update_display_info(newpage, 0, 0);
-		return ;
+		printf("REUSING TAG\n");
+		reuse_tag(malloc_info);
 	}
-	page_tag = (t_segment_tag *)info->head;
-	while (page_tag->nextpage)
-	{
-		pptr = page_tag->nextpage;
-		page_tag = (t_segment_tag *)pptr;
-	}
-	page_tag->nextpage = newpage;
-}
-
-void	*map_memory(size_t size)
-{
-	void			*mptr;
-	t_tag			*free_tag;
-	size_t			mapped;
-	long			pages = 0;
-	t_segment_tag	 *page_tag;
-
-	if ((mptr = find_free_node(size)) != NULL)
-		reuse_tag(mptr, size, &mapped);
 	else
 	{
-		if (IS_TINY(size))
+		printf("MAPPING...\n");
+		map_memory(malloc_info);
+		printf("%sMAPPED! %p%s\n", YELLOW, malloc_info->mptr, NORMAL);
+		add_next_page(malloc_info);
+		printf("PAGE ADDED!\n");
+		page_tag = (t_segment_tag *)malloc_info->mptr;
+		page_tag->pages = malloc_info->pages;
+ 		malloc_info->mptr += sizeof(t_segment_tag);
+		malloc_info->mapped_size -= sizeof(t_segment_tag); //this and below - fix logic later (add tag_size to size at the beginning)
+		if (!(malloc_info->mapped_size > (malloc_info->size + sizeof(t_rbnode) + sizeof(t_rbnode))))
 		{
-			mapped = count_size(100 * TINY, &pages);
-			mptr = mmap(NULL, mapped, PROT_READ | PROT_WRITE | PROT_EXEC,
-						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+			malloc_info->size = malloc_info->size + (malloc_info->mapped_size - malloc_info->size - sizeof(t_rbnode));
+			printf("SIZE CHANGED\n");
 		}
-		else if (IS_SMALL(size))
-		{
-			mapped = count_size(100 * SMALL, &pages);
-			mptr = mmap(NULL, mapped, PROT_READ | PROT_WRITE | PROT_EXEC,
-						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-		}
-		else
-		{
-			mapped = count_size(size + sizeof(t_segment_tag), &pages);
-			mptr = mmap(NULL, mapped, PROT_READ | PROT_WRITE | PROT_EXEC,
-						MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
-		}
-		add_next_page(mptr);
-		page_tag = (t_segment_tag *)mptr;
-		page_tag->pages = pages;
- 		mptr += sizeof(t_segment_tag);
-		mapped -= sizeof(t_segment_tag);
-		if (mapped > (size + sizeof(t_tag) + sizeof(t_tag)))
-			insert_tag(mptr, mptr - sizeof(t_segment_tag), size, false);
-		else
-			insert_tag(mptr, mptr - sizeof(t_segment_tag), size + (mapped - size - sizeof(t_tag)), false);
-		mapped -= sizeof(t_tag);
+			
+		insert_tag(malloc_info, malloc_info->mptr - sizeof(t_segment_tag), false);
+		malloc_info->mapped_size -= sizeof(t_rbnode);
 	}
-	free_tag = (t_tag *)mptr;
-	if (mapped > (free_tag->size + sizeof(t_tag)))
+	printf("STARTING TO ADD A FREE TAG, MPTR: %p\n", malloc_info->mptr);
+	free_tag = (t_rbnode *)malloc_info->mptr;
+	if (malloc_info->mapped_size > (free_tag->size + sizeof(t_rbnode)))
 	{
-		insert_tag(mptr + sizeof(t_tag) + free_tag->size, free_tag->head,
-		mapped - free_tag->size - sizeof(t_tag), true);
+		size_t idk = malloc_info->size;
+		malloc_info->size = malloc_info->mapped_size - free_tag->size - sizeof(t_rbnode);
+		insert_tag(malloc_info, free_tag->head, true);
 	}
-	return (mptr);
+	printf("FREE TAG ADDED!\n");
 }
+
 
 void	*ft_malloc(size_t size)
 {
-	void *mptr;
+	t_malloc	malloc_info;
 
 	if (size == 0)
 		return (NULL);
-	mptr = map_memory(size);
-	mptr += sizeof(t_tag);
-	print_tree(g_tags_tree);
-	show_alloc_mem();
-	
-	return (mptr);
+
+	printf("%sALL SIZES: t_rbnode %lx | t_segment_tag %lx%s\n", ORANGE, sizeof(t_rbnode), sizeof(t_segment_tag), NORMAL);
+	ft_bzero(&malloc_info, sizeof(t_malloc));
+	malloc_info.size = size;
+	distribute_memory(&malloc_info);
+	printf("done with distributing memory!\n");
+	// print_tree(g_tags_tree);
+	// show_alloc_mem();
+	return (malloc_info.mptr += sizeof(t_rbnode));
 }
 
-int		main(void)
+// int main (void)
+// {
+// 	printf ("tf\n");
+// }
+	
+	int		main(void)
 {
 	char *ptr;
 	char *ptr1;
 	char *ptr2 = NULL;
 
+	printf("WE ARE HERE\n");
 	ptr = ft_malloc(9);
 	ptr2 = ft_malloc(960);
 	ptr1 = ft_malloc(11700);

@@ -6,7 +6,7 @@
 /*   By: psprawka <psprawka@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/03 12:27:29 by psprawka          #+#    #+#             */
-/*   Updated: 2018/05/03 12:27:31 by psprawka         ###   ########.fr       */
+/*   Updated: 2018/09/02 01:04:58 by psprawka         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,37 +23,48 @@
 **	my if statement is more detailed than on website above, i don't need it.
 */
 
-void	insertion_case4(t_tag *root)
+void	insertion_case4(t_rbnode *root)
 {
+	printf("INSERTION root: %p\n", root);
 	if (GRANDPA->right && GRANDPA->right->left == root)
 	{
+		printf("case 1 beg\n");
 		rotate_right(PARENT);
 		root = root->right;
+		printf("case 1 end\n");
 	}
 	else if (GRANDPA->left && GRANDPA->left->right == root)
 	{
+		printf("case 2 beg\n");
 		rotate_left(PARENT);
 		root = root->left;
+		printf("case 2 end\n");
 	}
+	printf("IM HERE\n");
 	root == PARENT->left ? rotate_right(GRANDPA) : rotate_left(GRANDPA);
 	PARENT->color_free |= BLACK;
 	PARENT->color_free &= (BLACK | FREE | USED);
+	printf("IM HERE2\n");
 	if (!PARENT->parent)
 		g_tags_tree = PARENT;
-	
+	printf("IM HERE3\n");
 	if (PARENT->left != root)
 	{
+		printf("ONE\n");
 		PARENT->left->color_free |= RED;
 		PARENT->left->color_free &= (RED | FREE | USED);
+		printf("ONE END");
 	}
 	else
 	{
+		printf("TWO\n");
 		PARENT->right->color_free |= RED;
 		PARENT->right->color_free &= (RED | FREE | USED);
+		printf("TWO END");
 	}
 }
 
-void	valid_insertion(t_tag *root)
+void	valid_insertion(t_rbnode *root)
 {
 	if (!PARENT)
 	{
@@ -88,10 +99,10 @@ void	valid_insertion(t_tag *root)
 **	postion to be assigned, thus parent node and add son. Validate insertion.
 */
 
-void	insertion(t_tag *to_insert)
+void	insertion(t_rbnode *to_insert)
 {
-	t_tag	*tptr;
-	t_tag	*parent;
+	t_rbnode	*tptr;
+	t_rbnode	*parent;
 	
 	tptr = g_tags_tree;
 	if (tptr == NULL)

@@ -6,13 +6,14 @@
 #    By: psprawka <psprawka@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/09 23:21:55 by psprawka          #+#    #+#              #
-#    Updated: 2018/03/08 07:14:00 by psprawka         ###   ########.fr        #
+#    Updated: 2018/09/02 00:25:18 by psprawka         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ft_malloc
 ENAME = FT_MALLOC
 FLAGS = -g -Wall -Wextra -Werror
+FLAGS += -fsanitize=address
 
 HEADERS = includes/
 SRCS_DIR = srcs/
@@ -21,6 +22,7 @@ SRCS =	$(SRCS_DIR)malloc.c \
 	$(SRCS_DIR)malloc_tags.c \
 	$(SRCS_DIR)malloc_rotations.c \
 	$(SRCS_DIR)malloc_tools.c \
+	$(SRCS_DIR)page.c \
 	$(SRCS_DIR)tree_insertion.c \
 	$(SRCS_DIR)tree_deletion.c
 

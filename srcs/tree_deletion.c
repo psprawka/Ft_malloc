@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   malloc_deletion.c                                  :+:      :+:    :+:   */
+/*   tree_deletion.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: psprawka <psprawka@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/04 10:38:35 by psprawka          #+#    #+#             */
-/*   Updated: 2018/05/04 10:38:37 by psprawka         ###   ########.fr       */
+/*   Updated: 2018/09/01 20:54:32 by psprawka         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 //#define BROTHER right_son->parent->right
 //#define	PARENTT right_son->parent
 
-//void	repair_tree(t_tag *right_son)
+//void	repair_tree(t_rbnode *right_son)
 //{
 //	char	parent_color;
 //	char	son_color;
@@ -70,9 +70,9 @@
 //	}
 //}
 
-void	repair_tree(t_tag *to_fix)
+void	repair_tree(t_rbnode *to_fix)
 {
-	t_tag	*idk;
+	t_rbnode	*idk;
 
 	while (to_fix != g_tags_tree && to_fix->color_free & BLACK)
 	{
@@ -148,7 +148,7 @@ void	repair_tree(t_tag *to_fix)
 	to_fix->color_free = (BLACK | FREE);
 }
 
-void	transplant(t_tag *to_delete, t_tag *to_replace)
+void	transplant(t_rbnode *to_delete, t_rbnode *to_replace)
 {
 	if (!to_delete->parent)
 		g_tags_tree = to_replace;
@@ -162,10 +162,10 @@ void	transplant(t_tag *to_delete, t_tag *to_replace)
 
 
 
-t_tag	*delete_two_children(t_tag *to_delete, char *orgcolor)
+t_rbnode	*delete_two_children(t_rbnode *to_delete, char *orgcolor)
 {
-	t_tag	*to_replace;
-	t_tag	*x;
+	t_rbnode	*to_replace;
+	t_rbnode	*x;
 	char	color;
 	
 //	printf("deletion: 3rd case\n");
@@ -195,9 +195,9 @@ t_tag	*delete_two_children(t_tag *to_delete, char *orgcolor)
 	return (x);
 }
 
-void	deletion(t_tag *to_delete)
+void	deletion(t_rbnode *to_delete)
 {
-	t_tag	*x = NULL;
+	t_rbnode	*x = NULL;
 	char	orgcolor;
 
 	orgcolor = to_delete->color_free;

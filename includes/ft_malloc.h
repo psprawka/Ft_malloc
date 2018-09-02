@@ -6,7 +6,7 @@
 /*   By: psprawka <psprawka@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/30 16:20:50 by psprawka          #+#    #+#             */
-/*   Updated: 2018/04/30 16:20:54 by psprawka         ###   ########.fr       */
+/*   Updated: 2018/09/02 00:19:31 by psprawka         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,32 +16,25 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include "libft.h"
 #include <sys/mman.h>
-
-# define TINY	128
-# define SMALL	1024
-
-# define IS_TINY(x)		x > 0 && x < TINY ? 1 : 0
-# define IS_SMALL(x)	x >= TINY && x < SMALL ? 1 : 0
-
-# define BLACK	1
-# define RED	2
-# define FREE	4
-# define USED	8
-
-#define GRANDPA		root->parent->parent
-#define PARENT		root->parent
-#define UNCLE_LEFT	GRANDPA->left
-#define UNCLE_RIGHT	GRANDPA->right
-
 #include <stdio.h>
 
-typedef struct	s_info
+#include "libft.h"
+#include "defines.h"
+
+typedef struct	s_malloc
+{
+	size_t			size;
+	size_t			mapped_size;
+	int64_t			pages;
+	void			*mptr;
+}				t_malloc;
+
+typedef struct	s_pages
 {
 	long			pages_nb;
 	void			*head;
-}				t_info;
+}				t_pages;
 
 typedef struct	s_segment_tag
 {
@@ -50,63 +43,68 @@ typedef struct	s_segment_tag
 	void			*nextpage;
 }				t_segment_tag;
 
-typedef struct	s_tag
+typedef struct	s_rbnode
 {
 	char			color_free;
 	size_t			size;
 	void			*head;
-	struct s_tag	*parent;
-	struct s_tag	*left;
-	struct s_tag	*right;
-}				t_tag;
+	struct s_rbnode	*parent;
+	struct s_rbnode	*left;
+	struct s_rbnode	*right;
+}				t_rbnode;
 
-extern t_tag	*g_tags_tree;
+extern t_rbnode	*g_tags_tree;
 
 /*
 ** free.c
 */
-void ft_free(void *ptr);
+void 		ft_free(void *ptr);
 
 /*
 ** malloc.c
 */
-void	*find_free_node(size_t size);
-void	*map_memory(size_t size);
-void	*ft_malloc(size_t size);
+void		*find_free_node(t_malloc *malloc_info);
+void		map_memory(t_malloc *malloc_info);
+void		*ft_malloc(size_t size);
 
 /*
 ** malloc_tags.c
 */
-void	insert_tag(void *mptr, void *head, size_t size, bool if_free);
-void	reuse_tag(void *mptr, size_t size, size_t *remainder);
+void		insert_tag(t_malloc *malloc_info, void *head, bool if_free);
+void		reuse_tag(t_malloc *malloc_info);
 
 /*
 ** malloc_rotations.c
 */
-void	rotate_left(t_tag *tag);
-void	rotate_right(t_tag *tag);
+void		rotate_left(t_rbnode *tag);
+void		rotate_right(t_rbnode *tag);
 
 /*
 ** malloc_tools.c
 */
-t_tag	*find_position(size_t size);
-t_info	*update_display_info(void *head, long pages, bool ifreturn);
-size_t	count_size(size_t size, long *pages_nb);
-void	show_alloc_mem(void);
-void	print_tree(t_tag *ptr);
+t_rbnode	*find_position(size_t size);
+t_pages		*update_display_info(void *head, long pages, bool ifreturn);
+void		count_size(size_t size, t_malloc *malloc_info);
+void		show_alloc_mem(void);
+void		print_tree(t_rbnode *ptr);
+
+/*
+**	page.c
+*/
+void		add_next_page(t_malloc *malloc_info);
 
 /*
 ** tree_insertion.c
 */
-void	valid_insertion(t_tag *root);
-void	insertion(t_tag *to_insert);
+void		valid_insertion(t_rbnode *root);
+void		insertion(t_rbnode *to_insert);
 
 /*
 ** tree_deletion.c
 */
-void	transplant(t_tag *to_delete, t_tag *to_replace);
-void	repair_tree(t_tag *to_fix);
-t_tag	*delete_two_children(t_tag *to_delete, char *orgcolor);
-void	deletion(t_tag *to_delete);
+void		transplant(t_rbnode *to_delete, t_rbnode *to_replace);
+void		repair_tree(t_rbnode *to_fix);
+t_rbnode	*delete_two_children(t_rbnode *to_delete, char *orgcolor);
+void		deletion(t_rbnode *to_delete);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: psprawka <psprawka@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/01 13:38:57 by psprawka          #+#    #+#             */
-/*   Updated: 2018/05/01 13:39:00 by psprawka         ###   ########.fr       */
+/*   Updated: 2018/09/01 20:54:24 by psprawka         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 **	https://en.wikipedia.org/wiki/Red%E2%80%93black_tree
 */
 
-void	rotate_left(t_tag *tag)
+void	rotate_left(t_rbnode *tag)
 {
-	t_tag *new_head;
+	t_rbnode *new_head;
 
 	if (!tag)
 		return ;
@@ -38,9 +38,9 @@ void	rotate_left(t_tag *tag)
 		new_head->parent->right = new_head;
 }
 
-void	rotate_right(t_tag *tag)
+void	rotate_right(t_rbnode *tag)
 {
-	t_tag *new_head;
+	t_rbnode *new_head;
 
 	if (!tag)
 		return ;
